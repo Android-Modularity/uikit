@@ -2,6 +2,7 @@ package com.march.app.proxy;
 
 
 import com.march.app.common.IView;
+import com.march.lifecycle.BaseLifeCycle;
 import com.march.lifecycle.ViewLifeCycle;
 
 /**
@@ -10,7 +11,7 @@ import com.march.lifecycle.ViewLifeCycle;
  *
  * @author chendong
  */
-public interface IViewProxy extends ViewLifeCycle ,IView {
+public interface IViewProxy extends BaseLifeCycle,ViewLifeCycle ,IView {
 
     int TYPE_ACTIVITY = 1;
     int TYPE_FRAGMENT = 2;

@@ -3,6 +3,7 @@ package com.march.app;
 import android.app.Application;
 
 import com.march.UIKit;
+import com.march.common.CommonKit;
 
 /**
  * CreateAt : 2017/12/7
@@ -18,6 +19,8 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInst = this;
+        CommonKit.init(this);
+        UIKit.setUIKitService(new UIKit.UIKitService());
     }
 
     public static BaseApplication getInst() {

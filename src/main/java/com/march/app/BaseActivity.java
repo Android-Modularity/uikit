@@ -53,12 +53,16 @@ public abstract class BaseActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewProxy = BaseViewProxy.create(this);
-        mViewProxy.onCreate();
-        initAfterViewCreated();
-        mViewProxy.onRestoreInstanceState(savedInstanceState);
-        mViewProxy.onViewCreated();
-        UIManager.getInst().addActivity(this);
+        try {
+            mViewProxy = BaseViewProxy.create(this);
+            mViewProxy.onCreate();
+            initAfterViewCreated();
+            mViewProxy.onRestoreInstanceState(savedInstanceState);
+            mViewProxy.onViewCreated();
+            UIManager.getInst().addActivity(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

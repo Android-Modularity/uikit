@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.march.app.common.IView;
 import com.march.app.common.ViewConfig;
 import com.march.app.proxy.BaseViewProxy;
+import com.march.app.proxy.LazyLoad;
 import com.march.widget.TitleView;
 
 
@@ -23,19 +24,34 @@ public abstract class BaseFragment extends Fragment
         implements IView, BaseViewProxy.ViewConfigInterface {
 
     protected BaseViewProxy mViewProxy;
+    private LazyLoad mLazyLoad;
 
     @Override
     public BaseViewProxy createViewProxy() {
         return null;
     }
 
+    // 支持懒加载
+    public LazyLoad getLazyLoad() {
+        return null;
+    }
     ///////////////////////////////////////////////////////////////////////////
     // 同步生命周期
     ///////////////////////////////////////////////////////////////////////////
 
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (mLazyLoad != null)
+            mLazyLoad.setUserVisibleHint(isVisibleToUser);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLazyLoad = getLazyLoad();
+        mLazyLoad.setFragment(this);
         mViewProxy = BaseViewProxy.create(this);
         mViewProxy.onCreate();
         mViewProxy.onRestoreInstanceState(savedInstanceState);
@@ -45,13 +61,19 @@ public abstract class BaseFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (mLazyLoad != null) mLazyLoad.onCreateView(inflater, container);
         return mViewProxy.onCreateView(inflater, container);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initAfterViewCreated();
+        try {
+            initAfterViewCreated();
+            if (mLazyLoad != null) mLazyLoad.onViewCreated();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -107,7 +129,6 @@ public abstract class BaseFragment extends Fragment
     }
 
 
-
     ///////////////////////////////////////////////////////////////////////////
     // IViewConfigInterface
     ///////////////////////////////////////////////////////////////////////////
@@ -119,6 +140,6 @@ public abstract class BaseFragment extends Fragment
 
     @Override
     public ViewConfig getViewConfig() {
-        return null;
+        return new ViewConfig().setWithTitle(false);
     }
 }

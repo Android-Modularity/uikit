@@ -10,7 +10,7 @@ import android.view.ViewGroup;
  *
  * @author chendong
  */
-public interface ViewLifeCycle extends BaseLifeCycle {
+public interface ViewLifeCycle {
 
     void onCreate();
 
