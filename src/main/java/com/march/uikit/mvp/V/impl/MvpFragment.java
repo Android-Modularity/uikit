@@ -1,11 +1,6 @@
 package com.march.uikit.mvp.V.impl;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-
-import com.march.app.BaseFragment;
+import com.march.uikit.app.BaseFragment;
 import com.march.uikit.mvp.P.MvpPresenter;
 import com.march.uikit.mvp.V.MvpView;
 import com.march.uikit.mvp.factory.IPresenterFactory;
@@ -14,15 +9,16 @@ import com.march.uikit.mvp.proxy.MvpViewProxy;
 
 /**
  * CreateAt : 2017/12/7
- * Describe : Fragment
+ * Describe : MvpFragment
  *
  * @author chendong
  */
 public abstract class MvpFragment<V extends MvpView, P extends MvpPresenter<V>>
         extends BaseFragment
-        implements MvpView {
+        implements MvpView<P> {
 
     @Override
+    @SuppressWarnings("unchecked")
     public MvpViewProxy<V, P> createViewProxy() {
         return MvpViewProxy.create((V) this, getPresenterFactory());
     }
@@ -37,6 +33,7 @@ public abstract class MvpFragment<V extends MvpView, P extends MvpPresenter<V>>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public P getPresenter() {
         return ((MvpViewProxy<V, P>) mViewProxy).getPresenter();
     }

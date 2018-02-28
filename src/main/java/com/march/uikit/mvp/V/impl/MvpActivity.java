@@ -1,9 +1,6 @@
 package com.march.uikit.mvp.V.impl;
 
-import android.app.Activity;
-import android.content.Context;
-
-import com.march.app.BaseActivity;
+import com.march.uikit.app.BaseActivity;
 import com.march.uikit.mvp.P.MvpPresenter;
 import com.march.uikit.mvp.V.MvpView;
 import com.march.uikit.mvp.factory.IPresenterFactory;
@@ -21,6 +18,7 @@ public abstract class MvpActivity<V extends MvpView, P extends MvpPresenter<V>>
         implements MvpView<P> {
 
     @Override
+    @SuppressWarnings("unchecked")
     public MvpViewProxy<V, P> createViewProxy() {
         return MvpViewProxy.create((V) this, getPresenterFactory());
     }
@@ -35,6 +33,7 @@ public abstract class MvpActivity<V extends MvpView, P extends MvpPresenter<V>>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public P getPresenter() {
         return ((MvpViewProxy<V, P>) mViewProxy).getPresenter();
     }

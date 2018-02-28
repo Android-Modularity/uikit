@@ -1,6 +1,6 @@
 package com.march.uikit.mvp.V;
 
-import com.march.app.common.IView;
+import com.march.uikit.app.common.IView;
 import com.march.uikit.mvp.P.MvpPresenter;
 
 /**

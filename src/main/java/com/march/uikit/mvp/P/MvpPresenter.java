@@ -1,7 +1,6 @@
 package com.march.uikit.mvp.P;
 
 import android.os.Bundle;
-import android.view.View;
 
 import com.march.uikit.mvp.V.MvpView;
 
@@ -17,18 +16,32 @@ public class MvpPresenter<V extends MvpView> implements IPresenter<V> {
 
     /**
      * 无法保证 View 全部完成初始化，建议只读
+     *
      * @param view view
      */
-    public void onAttachView(V view){
+    @Override
+    public void onAttachView(V view) {
         mView = view;
     }
 
-    public void onDetachView(){
+    @Override
+    public void onViewReady() {
+
+    }
+
+    @Override
+    public void onDetachView() {
         mView = null;
     }
 
+    @Override
     public V getView() {
         return mView;
+    }
+
+    @Override
+    public void onCreate() {
+
     }
 
     @Override
