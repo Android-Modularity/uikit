@@ -11,12 +11,11 @@
     <TextView
         android:id="@+id/tv_menu_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:gravity="center"
-        android:padding="15dp"
-        android:text="我是标题，不用我可以隐藏 "
         android:textSize="16sp"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        tools:text="我是标题，不用我可以隐藏 "/>
 
     <View
         android:id="@+id/line_below_title"
@@ -28,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:listitem="@layout/dialog_item_menu_list"/>
+        tools:listitem="@layout/dialog_menu_list_item"/>
 
     <View
         style="@style/common_line"
@@ -37,7 +36,7 @@
     <TextView
         android:id="@+id/tv_cancel"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:gravity="center"
         android:text="取消"
         android:textColor="#707070"

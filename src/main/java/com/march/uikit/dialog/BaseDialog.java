@@ -27,7 +27,7 @@ public abstract class BaseDialog extends AppCompatDialog {
     /**
      * wrap_content
      */
-    protected int WRAP  = ViewGroup.LayoutParams.WRAP_CONTENT;
+    protected int WRAP = ViewGroup.LayoutParams.WRAP_CONTENT;
 
     /**
      * 构造函数
@@ -48,17 +48,21 @@ public abstract class BaseDialog extends AppCompatDialog {
     public BaseDialog(Context context, int theme) {
         super(context, theme);
         setContentView(getLayoutId());
+        initOnConstruct();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViewOnCreate();
-        initEvents();
         setWindowParams();
     }
 
     protected abstract void initViewOnCreate();
+
+    protected void initOnConstruct() {
+    }
 
     protected abstract int getLayoutId();
 
@@ -105,25 +109,12 @@ public abstract class BaseDialog extends AppCompatDialog {
         return (V) findViewById(id);
     }
 
-
-    protected int[] getViewsRegisterClickEvent() {
-        return new int[]{};
-    }
-
-    private void initEvents() {
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickView(v);
+    protected void setClickListener(View.OnClickListener listener, int... viewIds) {
+        for (int viewId : viewIds) {
+            View view = getView(viewId);
+            if (view != null) {
+                view.setOnClickListener(listener);
             }
-        };
-        int[] views = getViewsRegisterClickEvent();
-        for (int viewId : views) {
-            getView(viewId).setOnClickListener(onClickListener);
         }
-    }
-
-    protected void onClickView(View view) {
-
     }
 }

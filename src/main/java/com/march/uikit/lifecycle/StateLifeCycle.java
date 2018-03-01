@@ -12,6 +12,8 @@ public interface StateLifeCycle {
 
     void onCreate();
 
+    void onViewReady();
+
     void onResume();
 
     void onPause();

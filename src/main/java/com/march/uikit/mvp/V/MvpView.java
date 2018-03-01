@@ -1,6 +1,6 @@
 package com.march.uikit.mvp.V;
 
-import com.march.uikit.app.common.IView;
+import com.march.uikit.app.view.IView;
 import com.march.uikit.mvp.P.MvpPresenter;
 
 /**
@@ -12,4 +12,6 @@ import com.march.uikit.mvp.P.MvpPresenter;
 public interface MvpView<P extends MvpPresenter> extends IView {
 
     P getPresenter();
+
+
 }

@@ -7,11 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.march.uikit.app.common.IView;
-import com.march.uikit.app.common.ViewConfig;
+import com.march.uikit.app.config.ViewConfigInterface;
+import com.march.uikit.app.config.ViewConfigModel;
 import com.march.uikit.app.proxy.BasicViewProxy;
 import com.march.uikit.app.proxy.LazyLoadViewProxy;
-import com.march.uikit.widget.TitleView;
+import com.march.uikit.app.view.IView;
+import com.march.uikit.lifecycle.ViewLifeCycle;
 
 
 /**
@@ -20,62 +21,34 @@ import com.march.uikit.widget.TitleView;
  *
  * @author chendong
  */
-public abstract class BaseFragment extends Fragment
-        implements IView, BasicViewProxy.ViewConfigInterface {
+public class BaseFragment extends Fragment implements IView, ViewLifeCycle, ViewConfigInterface {
 
     protected BasicViewProxy mViewProxy;
-    private LazyLoadViewProxy mLazyLoad;
+    private LazyLoadViewProxy mLazyLoadViewProxy;
 
     @Override
-    public BasicViewProxy createViewProxy() {
+    public BasicViewProxy newViewProxy() {
         return null;
     }
 
     // 支持懒加载
-    public LazyLoadViewProxy getLazyLoad() {
+    public LazyLoadViewProxy newLazyLoadProxy() {
         return null;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // 同步生命周期
-    ///////////////////////////////////////////////////////////////////////////
 
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (mLazyLoad != null)
-            mLazyLoad.setUserVisibleHint(isVisibleToUser);
-    }
+    //////////////////////////////  -- StateLifeCycle --  //////////////////////////////
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLazyLoad = getLazyLoad();
-        if (mLazyLoad != null) mLazyLoad.setFragment(this);
+        mLazyLoadViewProxy = newLazyLoadProxy();
+        if (mLazyLoadViewProxy != null) {
+            mLazyLoadViewProxy.setHost(this);
+        }
         mViewProxy = BasicViewProxy.create(this);
         mViewProxy.onCreate();
         mViewProxy.onRestoreInstanceState(savedInstanceState);
-    }
-
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (mLazyLoad != null) mLazyLoad.onCreateView(inflater, container);
-        return mViewProxy.onCreateView(inflater, container);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        try {
-            initAfterViewCreated();
-            if (mLazyLoad != null) mLazyLoad.onViewCreated();
-            mViewProxy.onViewCreated();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -103,27 +76,46 @@ public abstract class BaseFragment extends Fragment
         mViewProxy.onSaveInstanceState(outState);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // IView 通用逻辑
-    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////  -- FragmentLifeCycle --  //////////////////////////////
 
     @Override
-    public View getRootView() {
-        return mViewProxy.getRootView();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (mLazyLoadViewProxy != null)
+            mLazyLoadViewProxy.setUserVisibleHint(isVisibleToUser);
     }
 
-    public TitleView getTitleView() {
-        return mViewProxy.getTitleView();
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (mLazyLoadViewProxy != null) {
+            mLazyLoadViewProxy.onCreateView(inflater, container, savedInstanceState);
+        }
+        initBeforeViewCreated();
+        View view = mViewProxy.onCreateView(inflater, container, savedInstanceState);
+        initCreateView();
+        return view;
     }
+
 
     @Override
-    public <V extends View> V getView(int resId) {
-        return mViewProxy.getView(resId);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        try {
+            initAfterViewCreated();
+            mViewProxy.onViewReady();
+            if (mLazyLoadViewProxy != null) {
+                mLazyLoadViewProxy.onViewCreated(view, savedInstanceState);
+            }
+            mViewProxy.onViewCreated(view, savedInstanceState);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void initAfterViewCreated() {
-    }
+
+    //////////////////////////////  -- IView --  //////////////////////////////
 
     @Override
     public void startActivity(Class clz) {
@@ -135,9 +127,25 @@ public abstract class BaseFragment extends Fragment
         return mViewProxy.getData();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // IViewConfigInterface
-    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////  -- ViewLifeCycle --  //////////////////////////////
+
+    @Override
+    public void initCreateView() {
+        mViewProxy.initCreateView();
+    }
+
+    @Override
+    public void initAfterViewCreated() {
+        mViewProxy.initAfterViewCreated();
+    }
+
+    @Override
+    public void initBeforeViewCreated() {
+        mViewProxy.initBeforeViewCreated();
+    }
+
+
+    //////////////////////////////  -- ViewConfigInterface --  //////////////////////////////
 
     @Override
     public View getLayoutView() {
@@ -145,7 +153,12 @@ public abstract class BaseFragment extends Fragment
     }
 
     @Override
-    public ViewConfig getViewConfig() {
-        return new ViewConfig().setWithTitle(false);
+    public int getLayoutId() {
+        return 0;
+    }
+
+    @Override
+    public ViewConfigModel getViewConfig() {
+        return new ViewConfigModel().setWithTitle(false);
     }
 }

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.march.common.utils.LogUtils;
-import com.march.uikit.lifecycle.FragmentLifeCycle;
 
 /**
  * CreateAt : 2017/12/20
@@ -15,16 +14,10 @@ import com.march.uikit.lifecycle.FragmentLifeCycle;
  *
  * @author chendong
  */
-public abstract class LazyLoadViewProxy implements IViewProxy,FragmentLifeCycle {
+public abstract class LazyLoadViewProxy extends AbsViewProxy {
 
     private boolean mIsInit;
     private boolean mIsPrepared;
-
-    private Fragment mFragment;
-
-    public void setFragment(Fragment fragment) {
-        mFragment = fragment;
-    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -34,23 +27,13 @@ public abstract class LazyLoadViewProxy implements IViewProxy,FragmentLifeCycle 
     }
 
     @Override
-    public void onCreate() {
-        LogUtils.e("onCreate");
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        lazyLoadInternal();
+        LogUtils.e("onViewCreated");
         LogUtils.e("onCreateView");
         mIsPrepared = true;
         mIsInit = false;
         return null;
-    }
-
-    @Override
-    public void onViewCreated() {
-        lazyLoadInternal();
-        LogUtils.e("onViewCreated");
     }
 
     private void lazyLoadInternal() {
@@ -64,30 +47,5 @@ public abstract class LazyLoadViewProxy implements IViewProxy,FragmentLifeCycle 
 
     public void finishLoad(boolean finish) {
         mIsInit = finish;
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-
     }
 }

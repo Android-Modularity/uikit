@@ -1,4 +1,4 @@
-package com.march.uikit.app;
+package com.march.uikit.manager;
 
 import android.app.Activity;
 import android.os.Build;
@@ -40,7 +40,7 @@ public class UIManager {
     /**
      * 添加Activity到堆栈
      */
-    void addActivity(Activity activity) {
+    public void addActivity(Activity activity) {
         if(!mActivityStack.contains(activity))
         mActivityStack.add(activity);
     }
@@ -49,7 +49,7 @@ public class UIManager {
      * 移除Activity
      * @param activity
      */
-    void removeActivity(Activity activity) {
+    public void removeActivity(Activity activity) {
         if (mActivityStack.contains(activity))
             mActivityStack.remove(activity);
     }

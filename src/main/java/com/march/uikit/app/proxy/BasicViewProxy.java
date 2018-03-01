@@ -3,9 +3,7 @@ package com.march.uikit.app.proxy;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -13,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.march.common.utils.CheckUtils;
 import com.march.common.utils.LogUtils;
-import com.march.uikit.app.common.IView;
-import com.march.uikit.app.common.ViewConfig;
+import com.march.uikit.app.view.IElegantView;
+import com.march.uikit.app.config.ViewConfigInterface;
+import com.march.uikit.app.config.ViewConfigModel;
 import com.march.uikit.widget.TitleView;
 
 /**
@@ -24,58 +24,33 @@ import com.march.uikit.widget.TitleView;
  *
  * @author chendong
  */
-public class BasicViewProxy implements IViewProxy, IView {
+public class BasicViewProxy extends AbsViewProxy implements IElegantView {
 
-    private int mType;
-    private Activity mActivity;
-    private Fragment mFragment;
-    private ViewConfig mViewConfig;
+    private ViewConfigModel mViewConfig;
     private TitleView mTitleView;
     private View mRootView;
-
-    public interface ViewConfigInterface {
-
-        int getLayoutId();
-
-        View getLayoutView();
-
-        ViewConfig getViewConfig();
-
-        BasicViewProxy createViewProxy();
-    }
 
     /**
      * 创建一个 proxy
      *
-     * @param viewConfigInterface 配置接口
+     * @param pageConfInterface 配置接口
      * @return BaseViewProxy
      */
-    public static BasicViewProxy create(ViewConfigInterface viewConfigInterface) {
-        BasicViewProxy viewProxy = viewConfigInterface.createViewProxy();
-        if (viewProxy == null)
+    public static BasicViewProxy create(ViewConfigInterface pageConfInterface) {
+        BasicViewProxy viewProxy = pageConfInterface.newViewProxy();
+        if (viewProxy == null) {
             viewProxy = new BasicViewProxy();
-        viewProxy.setHost(viewConfigInterface);
-        ViewConfig viewConfig = viewConfigInterface.getViewConfig();
+        }
+        viewProxy.setHost(pageConfInterface);
+        ViewConfigModel viewConfig = pageConfInterface.getViewConfig();
         if (viewConfig == null)
-            viewConfig = new ViewConfig();
-        viewConfig.init(viewConfigInterface.getLayoutId(), viewConfigInterface.getLayoutView());
+            viewConfig = new ViewConfigModel();
+        viewConfig.init(pageConfInterface.getLayoutId(), pageConfInterface.getLayoutView());
+        ViewConfigModel.parseViewConfigAnnotation(pageConfInterface, viewConfig);
         viewProxy.mViewConfig = viewConfig;
         return viewProxy;
     }
 
-    private void setHost(Object host) {
-        if (host == null) {
-            return;
-        }
-        if (host instanceof Activity) {
-            mActivity = (Activity) host;
-            mType = TYPE_ACTIVITY;
-        } else if (host instanceof Fragment) {
-            mFragment = (Fragment) host;
-            mActivity = mFragment.getActivity();
-            mType = TYPE_FRAGMENT;
-        }
-    }
 
     @Override
     public void onCreate() {
@@ -83,42 +58,6 @@ public class BasicViewProxy implements IViewProxy, IView {
             setContentViewForActivity();
             mRootView = mActivity.findViewById(android.R.id.content);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container) {
-        return createViewForFragment(inflater, container);
-    }
-
-    @Override
-    public void onViewCreated() {
-
-    }
-
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-
     }
 
     @Override
@@ -134,11 +73,6 @@ public class BasicViewProxy implements IViewProxy, IView {
         } else {
             return (V) mRootView.findViewById(resId);
         }
-    }
-
-    @Override
-    public void initAfterViewCreated() {
-
     }
 
     @Override
@@ -180,6 +114,45 @@ public class BasicViewProxy implements IViewProxy, IView {
         return bundle;
     }
 
+    @Override
+    public void setClickListener(View.OnClickListener listener, int... viewIds) {
+        for (int viewId : viewIds) {
+            getView(viewId).setOnClickListener(listener);
+        }
+    }
+
+    @Override
+    public void setTitleText(int pos, String text) {
+        if (getTitleView() != null) {
+            getTitleView().setText(pos, text);
+        }
+    }
+
+    @Override
+    public void setTitleText(String left, String center, String right) {
+        if (getTitleView() != null) {
+            getTitleView().setText(left, center, right);
+        }
+    }
+
+    @Override
+    public void setTitleCenterText(String text) {
+        if (getTitleView() != null) {
+            setTitleText(TitleView.CENTER, text);
+        }
+    }
+
+    @Override
+    public int getColor(int colorRes) {
+        return getContext().getResources().getColor(colorRes);
+    }
+
+    @Override
+    public String getString(int stringRes) {
+        return getContext().getResources().getString(stringRes);
+    }
+
+
     // 为 Activity 设置界面
     private void setContentViewForActivity() {
         if (mViewConfig == null)
@@ -190,17 +163,14 @@ public class BasicViewProxy implements IViewProxy, IView {
         if (mViewConfig.isFullScreen()) {
             mActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-        // 隐藏 action bar
-        if (mViewConfig.isHideActionBar()) {
-            ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.hide();
-            }
-            if (mActivity.getActionBar() != null) {
-                mActivity.getActionBar().hide();
-            }
+        ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
         }
-        // 自动接入 title
+        if (mActivity.getActionBar() != null) {
+            mActivity.getActionBar().hide();
+        }
+        // 自动接入 showTitleBar
         if (mViewConfig.isWithTitle()) {
             mTitleView = new TitleView(mActivity);
             if (layoutId != 0) {
@@ -208,6 +178,7 @@ public class BasicViewProxy implements IViewProxy, IView {
             } else if (layoutView != null) {
                 mTitleView.addView(layoutView);
             }
+            mTitleView.setLeftBackListener(mActivity);
             mActivity.setContentView(mTitleView);
         } else {
             if (layoutId != 0) {
@@ -216,6 +187,7 @@ public class BasicViewProxy implements IViewProxy, IView {
                 mActivity.setContentView(layoutView);
             }
         }
+        viewInitCommon();
     }
 
     // 为 Fragment 创建 view
@@ -225,7 +197,7 @@ public class BasicViewProxy implements IViewProxy, IView {
         View view = null;
         View layoutView = mViewConfig.getLayoutView();
         int layoutId = mViewConfig.getLayoutId();
-        // 自动接入 title
+        // 自动接入 showTitleBar
         if (mViewConfig.isWithTitle()) {
             view = mTitleView = new TitleView(mActivity);
             if (layoutId != 0) {
@@ -233,6 +205,7 @@ public class BasicViewProxy implements IViewProxy, IView {
             } else if (layoutView != null) {
                 mTitleView.addView(layoutView);
             }
+            mTitleView.setLeftBackListener(mActivity);
         } else {
             if (layoutId != 0) {
                 view = inflater.inflate(layoutId, container, false);
@@ -241,6 +214,21 @@ public class BasicViewProxy implements IViewProxy, IView {
             }
         }
         mRootView = view;
+        viewInitCommon();
         return view;
+    }
+
+    private void viewInitCommon() {
+        if (mTitleView != null) {
+            if (!CheckUtils.isEmpty(mViewConfig.getTitle())) {
+                mTitleView.setCenterText(mViewConfig.getTitle());
+            }
+        }
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return createViewForFragment(inflater, container);
     }
 }

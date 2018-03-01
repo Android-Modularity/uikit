@@ -1,6 +1,7 @@
 package com.march.uikit.mvp.proxy;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.march.uikit.UIKit;
 import com.march.uikit.app.proxy.BasicViewProxy;
@@ -47,8 +48,8 @@ public class MvpViewProxy<V extends MvpView, P extends MvpPresenter<V>> extends 
 
 
     @Override
-    public void onViewCreated() {
-        super.onViewCreated();
+    public void onViewReady() {
+        super.onViewReady();
         getPresenter().onViewReady();
     }
 

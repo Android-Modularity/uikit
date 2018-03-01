@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.march.common.utils.CheckUtils;
 import com.march.common.utils.DimensUtils;
+import com.march.lightadapter.extend.decoration.LinerDividerDecoration;
 import com.march.uikit.dialog.BaseDialog;
 import com.march.lightadapter.LightAdapter;
 import com.march.lightadapter.LightHolder;
@@ -24,12 +25,10 @@ import java.util.List;
  *
  * @author chendong
  */
-public class XMenuListDialog extends BaseDialog {
+public class MenuListDialog extends BaseDialog {
 
     private int mHeight;
-    private RecyclerView mMenuRv;
     private TextView mTitleTv;
-    private View mLineBelowTitle;
     private List<Menu> mMenuDatas;
     private String mTitle;
 
@@ -38,65 +37,68 @@ public class XMenuListDialog extends BaseDialog {
     private LightAdapter<Menu> mAdapter;
 
     public interface OnMenuClickListener {
-        void onClick(int pos, Menu data, XMenuListDialog dialog);
+        void onClick(int pos, Menu data, MenuListDialog dialog);
     }
 
-    public XMenuListDialog(Context context, List<Menu> datas) {
+    public MenuListDialog(Context context, List<Menu> datas) {
         super(context);
         mMenuDatas = datas;
     }
 
-    public void setOnMenuClickListener(OnMenuClickListener onMenuClickListener) {
+    public MenuListDialog setOnMenuClickListener(OnMenuClickListener onMenuClickListener) {
         this.mOnMenuClickListener = onMenuClickListener;
+        return this;
     }
 
-
-    public void setMenuTitle(String title) {
+    public MenuListDialog setMenuTitle(String title) {
         mTitle = title;
+        return this;
     }
-
 
     @Override
     protected void initViewOnCreate() {
-        mMenuRv = getView(R.id.rv_menu_list);
         mTitleTv = getView(R.id.tv_menu_title);
-        mLineBelowTitle = getView(R.id.line_below_title);
-
+        RecyclerView menuRv = getView(R.id.rv_menu_list);
+        View lineBelowTitle = getView(R.id.line_below_title);
 
         if (!CheckUtils.isEmpty(mTitle)) {
             mTitleTv.setVisibility(View.VISIBLE);
-            mLineBelowTitle.setVisibility(View.VISIBLE);
+            lineBelowTitle.setVisibility(View.VISIBLE);
             mTitleTv.setText(mTitle);
         }
 
-        mAdapter = new LightAdapter<Menu>(getContext(), mMenuDatas) {
+        mAdapter = new LightAdapter<Menu>(getContext(), mMenuDatas,R.layout.dialog_menu_list_item) {
             @Override
             public void onBindView(LightHolder holder, Menu data, int pos, int type) {
                 holder.setText(R.id.tv_menu_content, data.display)
                         .setTextColor(R.id.tv_menu_content, data.color);
             }
         };
-        mAdapter.addType(LightAdapter.TYPE_DEFAULT, R.layout.dialog_item_menu_list);
         mAdapter.setOnItemListener(new SimpleItemListener<Menu>() {
             @Override
             public void onClick(int pos, LightHolder holder, Menu data) {
-                dismiss();
                 if (mOnMenuClickListener != null) {
-                    mOnMenuClickListener.onClick(pos, mMenuDatas.get(pos), XMenuListDialog.this);
+                    mOnMenuClickListener.onClick(pos, mMenuDatas.get(pos), MenuListDialog.this);
                 }
+                dismiss();
             }
         });
-        mAdapter.bind(this, mMenuRv, new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-    }
+        mAdapter.bind(this, menuRv, new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        LinerDividerDecoration.attachRecyclerView(menuRv,R.drawable.common_shape_divider);
 
-    @Override
-    protected int[] getViewsRegisterClickEvent() {
-        return new int[]{R.id.tv_cancel, R.id.tv_menu_title};
+        setClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int viewId = v.getId();
+                if (viewId == R.id.tv_cancel || viewId == R.id.tv_menu_title)
+                    dismiss();
+            }
+        }, R.id.tv_cancel, R.id.tv_menu_title);
     }
 
     @Override
     protected int getLayoutId() {
-        return R.layout.dialog_common_menu_list;
+        return R.layout.dialog_menu_list;
     }
 
     @Override
@@ -113,14 +115,6 @@ public class XMenuListDialog extends BaseDialog {
         setCancelable(true);
     }
 
-
-    @Override
-    protected void onClickView(View view) {
-        int viewId = view.getId();
-        if (viewId == R.id.tv_cancel || viewId == R.id.tv_menu_title)
-            dismiss();
-
-    }
 
     public static class Menu {
 

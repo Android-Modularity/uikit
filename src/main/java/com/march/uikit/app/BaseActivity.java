@@ -9,10 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.march.uikit.UIKit;
-import com.march.uikit.app.common.IView;
-import com.march.uikit.app.common.ViewConfig;
+import com.march.uikit.app.config.ViewConfigInterface;
+import com.march.uikit.app.config.ViewConfigModel;
 import com.march.uikit.app.proxy.BasicViewProxy;
-import com.march.uikit.widget.TitleView;
+import com.march.uikit.app.view.IView;
+import com.march.uikit.lifecycle.ViewLifeCycle;
+import com.march.uikit.manager.UIManager;
 
 
 /**
@@ -21,12 +23,12 @@ import com.march.uikit.widget.TitleView;
  *
  * @author chendong
  */
-public abstract class BaseActivity extends AppCompatActivity implements IView, BasicViewProxy.ViewConfigInterface {
+public abstract class BaseActivity extends AppCompatActivity implements IView, ViewLifeCycle, ViewConfigInterface {
 
     protected BasicViewProxy mViewProxy;
 
     @Override
-    public BasicViewProxy createViewProxy() {
+    public BasicViewProxy newViewProxy() {
         return null;
     }
 
@@ -43,11 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, B
         UIKit.getUIKitService().onActivityStartOrFinish(getActivity(), false);
     }
 
-
-    ///////////////////////////////////////////////////////////////////////////
-    // 同步生命周期
-    ///////////////////////////////////////////////////////////////////////////
-
+    //////////////////////////////  -- StateLifeCycle --  //////////////////////////////
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,9 +54,10 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, B
             mViewProxy = BasicViewProxy.create(this);
             initBeforeViewCreated();
             mViewProxy.onCreate();
+            initCreateView();
             initAfterViewCreated();
+            mViewProxy.onViewReady();
             mViewProxy.onRestoreInstanceState(savedInstanceState);
-            mViewProxy.onViewCreated();
             UIManager.getInst().addActivity(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,18 +89,24 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, B
         mViewProxy.onSaveInstanceState(outState);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // IView
-    ///////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////  -- ViewLifeCycle --  //////////////////////////////
+
+    @Override
+    public void initCreateView() {
+        mViewProxy.initCreateView();
+    }
 
     @Override
     public void initAfterViewCreated() {
-
+        mViewProxy.initAfterViewCreated();
     }
 
     public void initBeforeViewCreated() {
-
+        mViewProxy.initBeforeViewCreated();
     }
+
+    //////////////////////////////  -- IView --  //////////////////////////////
 
     @Override
     public Context getContext() {
@@ -119,36 +124,24 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, B
     }
 
     @Override
-    public TitleView getTitleView() {
-        return mViewProxy.getTitleView();
-    }
-
-    @Override
-    public <V extends View> V getView(int resId) {
-        return mViewProxy.getView(resId);
-    }
-
-    @Override
-    public View getRootView() {
-        return mViewProxy.getRootView();
-    }
-
-    @Override
     public Bundle getData() {
         return mViewProxy.getData();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // IViewConfigInterface
-    ///////////////////////////////////////////////////////////////////////////
 
+    //////////////////////////////  -- ViewConfigInterface --  //////////////////////////////
     @Override
     public View getLayoutView() {
         return null;
     }
 
     @Override
-    public ViewConfig getViewConfig() {
-        return new ViewConfig();
+    public int getLayoutId() {
+        return 0;
+    }
+
+    @Override
+    public ViewConfigModel getViewConfig() {
+        return new ViewConfigModel();
     }
 }

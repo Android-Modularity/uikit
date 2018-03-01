@@ -14,11 +14,11 @@ import com.march.uikit.R;
  *
  * @author chendong
  */
-public class XProgressDialog extends BaseDialog {
+public class ProgressDialog extends BaseDialog {
 
     private ProgressBar mProgressBar;
 
-    public XProgressDialog(Context context) {
+    public ProgressDialog(Context context) {
         super(context);
     }
 
@@ -29,7 +29,7 @@ public class XProgressDialog extends BaseDialog {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.dialog_common_progress;
+        return R.layout.dialog_progress;
     }
 
     @Override

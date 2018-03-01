@@ -19,7 +19,7 @@ public abstract class MvpActivity<V extends MvpView, P extends MvpPresenter<V>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public MvpViewProxy<V, P> createViewProxy() {
+    public MvpViewProxy<V, P> newViewProxy() {
         return MvpViewProxy.create((V) this, getPresenterFactory());
     }
 
