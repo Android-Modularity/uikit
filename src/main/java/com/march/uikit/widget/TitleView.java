@@ -17,6 +17,7 @@ import com.march.uikit.R;
  */
 public class TitleView extends LinearLayout {
 
+
     public TitleView(Context context) {
         this(context, null);
     }

@@ -17,7 +17,7 @@ public interface IElegantView extends IView {
 
     TitleView getTitleView();
 
-    <V extends View> V getView(int resId);
+    <V extends View> V findView(int resId);
 
     View getRootView();
 
@@ -32,4 +32,6 @@ public interface IElegantView extends IView {
     int getColor(@ColorRes int colorRes);
 
     String getString(@StringRes int stringRes);
+
+    void finish();
 }

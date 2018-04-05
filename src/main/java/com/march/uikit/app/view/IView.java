@@ -3,10 +3,6 @@ package com.march.uikit.app.view;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
-
-import com.march.uikit.app.proxy.BasicViewProxy;
-import com.march.uikit.widget.TitleView;
 
 /**
  * CreateAt : 2017/12/7
@@ -17,11 +13,11 @@ import com.march.uikit.widget.TitleView;
  */
 public interface IView {
 
-    Context  getContext();
+    Context getContext();
 
     Activity getActivity();
 
-    void     startActivity(Class clz);
+    void startActivity(Class clz);
 
-    Bundle   getData();
+    Bundle getData();
 }

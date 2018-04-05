@@ -35,6 +35,6 @@ public abstract class MvpActivity<V extends MvpView, P extends MvpPresenter<V>>
     @Override
     @SuppressWarnings("unchecked")
     public P getPresenter() {
-        return ((MvpViewProxy<V, P>) mViewProxy).getPresenter();
+        return ((MvpViewProxy<V, P>)  mViewDelegate).getPresenter();
     }
 }

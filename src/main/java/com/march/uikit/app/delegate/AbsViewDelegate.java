@@ -1,4 +1,4 @@
-package com.march.uikit.app.proxy;
+package com.march.uikit.app.delegate;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import android.view.ViewGroup;
  *
  * @author chendong
  */
-public class AbsViewProxy implements IViewProxy {
+class AbsViewDelegate implements IViewDelegate {
 
     protected int mType;
     protected Activity mActivity;
@@ -72,6 +72,16 @@ public class AbsViewProxy implements IViewProxy {
 
     @Override
     public void onPause() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onBeforeDestroy() {
 
     }
 

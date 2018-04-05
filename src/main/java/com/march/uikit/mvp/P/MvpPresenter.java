@@ -55,6 +55,16 @@ public class MvpPresenter<V extends MvpView> implements IPresenter<V> {
     }
 
     @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onBeforeDestroy() {
+
+    }
+
+    @Override
     public void onDestroy() {
 
     }

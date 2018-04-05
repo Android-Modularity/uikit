@@ -1,4 +1,4 @@
-package com.march.uikit.app.proxy;
+package com.march.uikit.app.delegate;
 
 import com.march.uikit.lifecycle.FragmentLifeCycle;
 import com.march.uikit.lifecycle.StateLifeCycle;
@@ -10,7 +10,7 @@ import com.march.uikit.lifecycle.ViewLifeCycle;
  *
  * @author chendong
  */
-public interface IViewProxy extends StateLifeCycle, ViewLifeCycle, FragmentLifeCycle {
+public interface IViewDelegate extends StateLifeCycle, ViewLifeCycle, FragmentLifeCycle {
 
     int TYPE_ACTIVITY = 1;
     int TYPE_FRAGMENT = 2;

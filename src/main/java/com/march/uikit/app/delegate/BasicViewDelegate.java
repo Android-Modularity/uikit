@@ -1,8 +1,9 @@
-package com.march.uikit.app.proxy;
+package com.march.uikit.app.delegate;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +15,8 @@ import android.view.WindowManager;
 import com.march.common.utils.CheckUtils;
 import com.march.common.utils.LogUtils;
 import com.march.uikit.app.view.IElegantView;
-import com.march.uikit.app.config.ViewConfigInterface;
-import com.march.uikit.app.config.ViewConfigModel;
+import com.march.uikit.app.config.IViewConfig;
+import com.march.uikit.app.config.ViewConfig;
 import com.march.uikit.widget.TitleView;
 
 /**
@@ -24,9 +25,9 @@ import com.march.uikit.widget.TitleView;
  *
  * @author chendong
  */
-public class BasicViewProxy extends AbsViewProxy implements IElegantView {
+public class BasicViewDelegate extends AbsViewDelegate implements IElegantView {
 
-    private ViewConfigModel mViewConfig;
+    private ViewConfig mViewConfig;
     private TitleView mTitleView;
     private View mRootView;
 
@@ -36,17 +37,19 @@ public class BasicViewProxy extends AbsViewProxy implements IElegantView {
      * @param pageConfInterface 配置接口
      * @return BaseViewProxy
      */
-    public static BasicViewProxy create(ViewConfigInterface pageConfInterface) {
-        BasicViewProxy viewProxy = pageConfInterface.newViewProxy();
+    public static BasicViewDelegate create(IViewConfig pageConfInterface) {
+        BasicViewDelegate viewProxy = pageConfInterface.newViewProxy();
         if (viewProxy == null) {
-            viewProxy = new BasicViewProxy();
+            viewProxy = new BasicViewDelegate();
         }
         viewProxy.setHost(pageConfInterface);
-        ViewConfigModel viewConfig = pageConfInterface.getViewConfig();
-        if (viewConfig == null)
-            viewConfig = new ViewConfigModel();
+        ViewConfig viewConfig = pageConfInterface.getViewConfig();
+        if (viewConfig == null) {
+            viewConfig = new ViewConfig();
+        }
         viewConfig.init(pageConfInterface.getLayoutId(), pageConfInterface.getLayoutView());
-        ViewConfigModel.parseViewConfigAnnotation(pageConfInterface, viewConfig);
+        // 注解配置更优先
+        viewConfig.parseViewConfigAnnotation(pageConfInterface);
         viewProxy.mViewConfig = viewConfig;
         return viewProxy;
     }
@@ -67,7 +70,7 @@ public class BasicViewProxy extends AbsViewProxy implements IElegantView {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <V extends View> V getView(int resId) {
+    public <V extends View> V findView(int resId) {
         if (mType == TYPE_ACTIVITY) {
             return (V) mActivity.findViewById(resId);
         } else {
@@ -87,11 +90,16 @@ public class BasicViewProxy extends AbsViewProxy implements IElegantView {
 
     @Override
     public void startActivity(Class clz) {
-        try {
-            Intent intent = new Intent(getContext(), clz);
-            mActivity.startActivity(intent);
-        } catch (Exception e) {
-            LogUtils.e(e);
+        if (clz == null) {
+            return;
+        }
+        Intent intent = new Intent(getContext(), clz);
+        if (getContext().getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+            try {
+                mActivity.startActivity(intent);
+            } catch (Exception e) {
+                LogUtils.e(e);
+            }
         }
     }
 
@@ -117,7 +125,7 @@ public class BasicViewProxy extends AbsViewProxy implements IElegantView {
     @Override
     public void setClickListener(View.OnClickListener listener, int... viewIds) {
         for (int viewId : viewIds) {
-            getView(viewId).setOnClickListener(listener);
+            findView(viewId).setOnClickListener(listener);
         }
     }
 
@@ -150,6 +158,14 @@ public class BasicViewProxy extends AbsViewProxy implements IElegantView {
     @Override
     public String getString(int stringRes) {
         return getContext().getResources().getString(stringRes);
+    }
+
+    @Override
+    public void finish() {
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.finish();
+        }
     }
 
 

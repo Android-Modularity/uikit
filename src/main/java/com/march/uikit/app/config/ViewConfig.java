@@ -2,7 +2,8 @@ package com.march.uikit.app.config;
 
 import android.view.View;
 
-import com.march.common.utils.CheckUtils;
+import com.march.uikit.annotation.Layout;
+import com.march.uikit.annotation.Title;
 
 /**
  * CreateAt : 2017/11/8
@@ -10,7 +11,7 @@ import com.march.common.utils.CheckUtils;
  *
  * @author chendong
  */
-public class ViewConfigModel {
+public class ViewConfig {
 
     private boolean isFullScreen = false;
     private boolean isWithTitle = true;
@@ -20,7 +21,7 @@ public class ViewConfigModel {
         return isFullScreen;
     }
 
-    public ViewConfigModel setFullScreen(boolean fullScreen) {
+    private ViewConfig setFullScreen(boolean fullScreen) {
         this.isFullScreen = fullScreen;
         return this;
     }
@@ -29,7 +30,7 @@ public class ViewConfigModel {
         return isWithTitle;
     }
 
-    public ViewConfigModel setWithTitle(boolean withTitle) {
+    public ViewConfig setWithTitle(boolean withTitle) {
         this.isWithTitle = withTitle;
         return this;
     }
@@ -38,7 +39,7 @@ public class ViewConfigModel {
         return title;
     }
 
-    public ViewConfigModel setTitle(String title) {
+    public ViewConfig setTitle(String title) {
         this.title = title;
         return this;
     }
@@ -64,20 +65,16 @@ public class ViewConfigModel {
         this.layoutId = layoutId;
     }
 
-    public static void parseViewConfigAnnotation(Object object, ViewConfigModel config) {
-        com.march.uikit.annotation.ViewConfig anno = object.getClass().getAnnotation(com.march.uikit.annotation.ViewConfig.class);
-        if (anno != null) {
-            if (anno.layoutId() != 0) {
-                config.setLayoutId(anno.layoutId());
-            }
-            config.setFullScreen(anno.fullScreen());
-            String title = anno.title();
-            if (CheckUtils.isEmpty(title)) {
-                config.setWithTitle(false);
-            } else {
-                config.setWithTitle(true);
-                config.setTitle(title);
-            }
+    public void parseViewConfigAnnotation(Object object) {
+        Layout layoutAnno = object.getClass().getAnnotation(Layout.class);
+        if (layoutAnno != null) {
+            setLayoutId(layoutAnno.value());
+            setFullScreen(layoutAnno.fullScreen());
+        }
+        Title titleAnno = object.getClass().getAnnotation(Title.class);
+        if (titleAnno != null) {
+            setTitle(titleAnno.titleText());
+            setWithTitle(titleAnno.hasTitle());
         }
     }
 }

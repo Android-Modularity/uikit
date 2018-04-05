@@ -1,9 +1,13 @@
 package com.march.uikit.app;
 
 import android.app.Application;
+import android.text.TextUtils;
 
+import com.march.common.adapter.JsonParseAdapter;
+import com.march.common.utils.AppUtils;
 import com.march.uikit.UIKit;
 import com.march.common.Common;
+import com.march.uikit.common.JsonParseAdapterImpl;
 
 /**
  * CreateAt : 2017/12/7
@@ -19,8 +23,15 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sApp = this;
-        Common.init(this);
-        UIKit.setUIKitService(new UIKit.UIKitService());
+        if (TextUtils.equals(AppUtils.getProcessName(), getPackageName())) {
+            Common.init(this, new JsonParseAdapterImpl());
+            UIKit.setUIKitService(new UIKit.UIKitService());
+            initInMainProcess();
+        }
+    }
+
+    protected void initInMainProcess() {
+
     }
 
     public static BaseApplication getApp() {

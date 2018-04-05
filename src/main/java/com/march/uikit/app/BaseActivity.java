@@ -9,9 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.march.uikit.UIKit;
-import com.march.uikit.app.config.ViewConfigInterface;
-import com.march.uikit.app.config.ViewConfigModel;
-import com.march.uikit.app.proxy.BasicViewProxy;
+import com.march.uikit.app.config.IViewConfig;
+import com.march.uikit.app.config.ViewConfig;
+import com.march.uikit.app.delegate.BasicViewDelegate;
 import com.march.uikit.app.view.IView;
 import com.march.uikit.lifecycle.ViewLifeCycle;
 import com.march.uikit.manager.UIManager;
@@ -23,12 +23,12 @@ import com.march.uikit.manager.UIManager;
  *
  * @author chendong
  */
-public abstract class BaseActivity extends AppCompatActivity implements IView, ViewLifeCycle, ViewConfigInterface {
+public abstract class BaseActivity extends AppCompatActivity implements IView, ViewLifeCycle, IViewConfig {
 
-    protected BasicViewProxy mViewProxy;
+    protected BasicViewDelegate mViewDelegate;
 
     @Override
-    public BasicViewProxy newViewProxy() {
+    public BasicViewDelegate newViewProxy() {
         return null;
     }
 
@@ -51,13 +51,13 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            mViewProxy = BasicViewProxy.create(this);
+            mViewDelegate = BasicViewDelegate.create(this);
             initBeforeViewCreated();
-            mViewProxy.onCreate();
+            mViewDelegate.onCreate();
             initCreateView();
             initAfterViewCreated();
-            mViewProxy.onViewReady();
-            mViewProxy.onRestoreInstanceState(savedInstanceState);
+            mViewDelegate.onViewReady();
+            mViewDelegate.onRestoreInstanceState(savedInstanceState);
             UIManager.getInst().addActivity(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,28 +65,43 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        mViewProxy.onResume();
+        mViewDelegate.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mViewProxy.onPause();
+        mViewDelegate.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mViewDelegate.onStop();
+        if (isFinishing()) {
+            mViewDelegate.onBeforeDestroy();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mViewProxy.onDestroy();
+        mViewDelegate.onDestroy();
         UIManager.getInst().removeActivity(this);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mViewProxy.onSaveInstanceState(outState);
+        mViewDelegate.onSaveInstanceState(outState);
     }
 
 
@@ -94,38 +109,39 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
 
     @Override
     public void initCreateView() {
-        mViewProxy.initCreateView();
+        mViewDelegate.initCreateView();
     }
 
     @Override
     public void initAfterViewCreated() {
-        mViewProxy.initAfterViewCreated();
+        mViewDelegate.initAfterViewCreated();
     }
 
+    @Override
     public void initBeforeViewCreated() {
-        mViewProxy.initBeforeViewCreated();
+        mViewDelegate.initBeforeViewCreated();
     }
 
     //////////////////////////////  -- IView --  //////////////////////////////
 
     @Override
     public Context getContext() {
-        return mViewProxy.getContext();
+        return mViewDelegate.getContext();
     }
 
     @Override
     public Activity getActivity() {
-        return mViewProxy.getActivity();
+        return mViewDelegate.getActivity();
     }
 
     @Override
     public void startActivity(Class clz) {
-        mViewProxy.startActivity(clz);
+        mViewDelegate.startActivity(clz);
     }
 
     @Override
     public Bundle getData() {
-        return mViewProxy.getData();
+        return mViewDelegate.getData();
     }
 
 
@@ -141,7 +157,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
     }
 
     @Override
-    public ViewConfigModel getViewConfig() {
-        return new ViewConfigModel();
+    public ViewConfig getViewConfig() {
+        return new ViewConfig();
+    }
+
+    public BasicViewDelegate getViewDelegate() {
+        return mViewDelegate;
     }
 }

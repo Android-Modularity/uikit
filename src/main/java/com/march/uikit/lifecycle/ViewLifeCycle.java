@@ -13,4 +13,5 @@ public interface ViewLifeCycle {
     void initAfterViewCreated();
 
     void initBeforeViewCreated();
+
 }

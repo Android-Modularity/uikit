@@ -18,6 +18,10 @@ public interface StateLifeCycle {
 
     void onPause();
 
+    void onStop();
+
+    void onBeforeDestroy();
+
     void onDestroy();
 
     void onSaveInstanceState(Bundle outState);

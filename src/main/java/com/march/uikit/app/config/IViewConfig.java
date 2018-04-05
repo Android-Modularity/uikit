@@ -2,7 +2,8 @@ package com.march.uikit.app.config;
 
 import android.view.View;
 
-import com.march.uikit.app.proxy.BasicViewProxy;
+import com.march.uikit.app.delegate.BasicViewDelegate;
+import com.march.uikit.app.delegate.IViewDelegate;
 
 /**
  * CreateAt : 2017/12/7
@@ -10,13 +11,14 @@ import com.march.uikit.app.proxy.BasicViewProxy;
  *
  * @author chendong
  */
-public interface ViewConfigInterface {
+public interface IViewConfig {
 
     int getLayoutId();
 
     View getLayoutView();
 
-    ViewConfigModel getViewConfig();
+    ViewConfig getViewConfig();
 
-    BasicViewProxy newViewProxy();
+    BasicViewDelegate newViewProxy();
+
 }

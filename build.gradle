@@ -12,6 +12,7 @@ dependencies {
 
     compile rootProject.ext.google.appcompat_v7
     compile rootProject.ext.google.design
+    compile rootProject.ext.libs.gson
 
     compile project(':common')
     compile project(':lightadapter')
