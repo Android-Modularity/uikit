@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Layout {
+public @interface UILayout {
 
     int value() default 0;
 

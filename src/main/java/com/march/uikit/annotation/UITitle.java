@@ -12,7 +12,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Title {
+public @interface UITitle {
+
+    String value() default "";
 
     String titleText() default "";
 

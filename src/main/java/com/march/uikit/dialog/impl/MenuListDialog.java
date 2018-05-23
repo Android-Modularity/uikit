@@ -2,7 +2,6 @@ package com.march.uikit.dialog.impl;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
@@ -10,11 +9,13 @@ import android.widget.TextView;
 
 import com.march.common.utils.CheckUtils;
 import com.march.common.utils.DimensUtils;
+import com.march.lightadapter.LightInjector;
 import com.march.lightadapter.extend.decoration.LinerDividerDecoration;
+import com.march.lightadapter.helper.LightManager;
+import com.march.lightadapter.listener.SimpleItemListener;
 import com.march.uikit.dialog.BaseDialog;
 import com.march.lightadapter.LightAdapter;
 import com.march.lightadapter.LightHolder;
-import com.march.lightadapter.event.SimpleItemListener;
 import com.march.uikit.R;
 
 import java.util.List;
@@ -83,7 +84,7 @@ public class MenuListDialog extends BaseDialog {
                 dismiss();
             }
         });
-        mAdapter.bind(this, menuRv, new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        LightInjector.initAdapter(mAdapter,this,menuRv, LightManager.vLinear(getContext()));
         LinerDividerDecoration.attachRecyclerView(menuRv,R.drawable.common_shape_divider);
 
         setClickListener(new View.OnClickListener() {
