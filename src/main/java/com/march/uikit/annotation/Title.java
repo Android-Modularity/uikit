@@ -14,6 +14,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Title {
 
+    String value() default "";
+
     String titleText() default "";
 
     boolean hasTitle() default false;

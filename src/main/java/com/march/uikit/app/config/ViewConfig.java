@@ -2,6 +2,7 @@ package com.march.uikit.app.config;
 
 import android.view.View;
 
+import com.march.common.utils.CheckUtils;
 import com.march.uikit.annotation.Layout;
 import com.march.uikit.annotation.Title;
 
@@ -14,7 +15,7 @@ import com.march.uikit.annotation.Title;
 public class ViewConfig {
 
     private boolean isFullScreen = false;
-    private boolean isWithTitle = true;
+    private boolean isWithTitle = false;
     private String title;
 
     public boolean isFullScreen() {
@@ -75,6 +76,9 @@ public class ViewConfig {
         if (titleAnno != null) {
             setTitle(titleAnno.titleText());
             setWithTitle(titleAnno.hasTitle());
+            if (!CheckUtils.isEmpty(title)) {
+                setWithTitle(true);
+            }
         }
     }
 }
