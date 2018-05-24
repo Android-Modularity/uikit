@@ -68,7 +68,7 @@ public class MenuListDialog extends BaseDialog {
             mTitleTv.setText(mTitle);
         }
 
-        mAdapter = new LightAdapter<Menu>(getContext(), mMenuDatas,R.layout.dialog_menu_list_item) {
+        mAdapter = new LightAdapter<Menu>(getContext(), mMenuDatas, R.layout.dialog_menu_list_item) {
             @Override
             public void onBindView(LightHolder holder, Menu data, int pos, int type) {
                 holder.setText(R.id.tv_menu_content, data.display)
@@ -84,8 +84,8 @@ public class MenuListDialog extends BaseDialog {
                 dismiss();
             }
         });
-        LightInjector.initAdapter(mAdapter,this,menuRv, LightManager.vLinear(getContext()));
-        LinerDividerDecoration.attachRecyclerView(menuRv,R.drawable.common_shape_divider);
+        LightInjector.initAdapter(mAdapter, this, menuRv, LightManager.vLinear(getContext()));
+        LinerDividerDecoration.attachRecyclerView(menuRv, R.drawable.common_shape_divider);
 
         setClickListener(new View.OnClickListener() {
             @Override

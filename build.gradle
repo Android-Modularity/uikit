@@ -1,19 +1,21 @@
 apply plugin: 'com.android.library'
 
+// project/build.gradle
+// apply from: 'https://coding.net/u/devlab/p/Resource/git/raw/master/android/project.gradle'
+def libs = rootProject.ext.libs
+def version = rootProject.ext.version
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
-    defaultConfig {
-        minSdkVersion 15
-    }
+    compileSdkVersion version.compileSdkVersion
 }
+
 
 dependencies {
 
-    compile rootProject.ext.google.appcompat_v7
-    compile rootProject.ext.google.design
-    compile rootProject.ext.libs.gson
+    implementation libs.appcompat_v7
+    implementation libs.design
+    implementation libs.gson
 
-    compile project(':common')
-    compile project(':lightadapter')
+    api project(':common')
+    api project(':lightadapter')
 }

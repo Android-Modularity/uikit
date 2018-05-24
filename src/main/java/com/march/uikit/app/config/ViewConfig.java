@@ -15,7 +15,7 @@ import com.march.uikit.annotation.UITitle;
 public class ViewConfig {
 
     private boolean isFullScreen = false;
-    private boolean isWithTitle = true;
+    private boolean isWithTitle = false;
     private String title;
 
     public boolean isFullScreen() {
@@ -79,6 +79,9 @@ public class ViewConfig {
             setTitle(titleAnno.value());
             setTitle(titleAnno.titleText());
             setWithTitle(titleAnno.hasTitle());
+            if (!CheckUtils.isEmpty(title)) {
+                setWithTitle(true);
+            }
         }
     }
 }
