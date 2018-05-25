@@ -106,7 +106,7 @@ public abstract class BaseDialog extends AppCompatDialog {
     }
 
     protected <V extends View> V getView(int id) {
-        return (V) findViewById(id);
+        return findViewById(id);
     }
 
     protected void setClickListener(View.OnClickListener listener, int... viewIds) {

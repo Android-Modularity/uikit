@@ -12,10 +12,10 @@ import com.march.common.utils.DimensUtils;
 import com.march.lightadapter.LightInjector;
 import com.march.lightadapter.extend.decoration.LinerDividerDecoration;
 import com.march.lightadapter.helper.LightManager;
+import com.march.lightadapter.listener.SimpleItemListener;
 import com.march.uikit.dialog.BaseDialog;
 import com.march.lightadapter.LightAdapter;
 import com.march.lightadapter.LightHolder;
-import com.march.lightadapter.listener.SimpleItemListener;
 import com.march.uikit.R;
 
 import java.util.List;

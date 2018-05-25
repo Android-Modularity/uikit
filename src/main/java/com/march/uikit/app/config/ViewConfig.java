@@ -41,7 +41,9 @@ public class ViewConfig {
     }
 
     public ViewConfig setTitle(String title) {
-        this.title = title;
+        if(!CheckUtils.isEmpty(title)){
+            this.title = title;
+        }
         return this;
     }
 
@@ -74,6 +76,7 @@ public class ViewConfig {
         }
         UITitle titleAnno = object.getClass().getAnnotation(UITitle.class);
         if (titleAnno != null) {
+            setTitle(titleAnno.value());
             setTitle(titleAnno.titleText());
             setWithTitle(titleAnno.hasTitle());
             if (!CheckUtils.isEmpty(title)) {
