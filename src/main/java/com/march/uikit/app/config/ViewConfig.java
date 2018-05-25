@@ -3,8 +3,8 @@ package com.march.uikit.app.config;
 import android.view.View;
 
 import com.march.common.utils.CheckUtils;
-import com.march.uikit.annotation.Layout;
-import com.march.uikit.annotation.Title;
+import com.march.uikit.annotation.UILayout;
+import com.march.uikit.annotation.UITitle;
 
 /**
  * CreateAt : 2017/11/8
@@ -67,12 +67,12 @@ public class ViewConfig {
     }
 
     public void parseViewConfigAnnotation(Object object) {
-        Layout layoutAnno = object.getClass().getAnnotation(Layout.class);
+        UILayout layoutAnno = object.getClass().getAnnotation(UILayout.class);
         if (layoutAnno != null) {
             setLayoutId(layoutAnno.value());
             setFullScreen(layoutAnno.fullScreen());
         }
-        Title titleAnno = object.getClass().getAnnotation(Title.class);
+        UITitle titleAnno = object.getClass().getAnnotation(UITitle.class);
         if (titleAnno != null) {
             setTitle(titleAnno.titleText());
             setWithTitle(titleAnno.hasTitle());
