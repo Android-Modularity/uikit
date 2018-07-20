@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.march.common.utils.LogUtils;
+import com.march.common.utils.LgUtils;
 
 /**
  * CreateAt : 2017/12/20
@@ -28,8 +28,8 @@ public abstract class LazyLoadViewDelegate extends AbsViewDelegate {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         lazyLoadInternal();
-        LogUtils.e("onViewCreated");
-        LogUtils.e("onCreateView");
+        LgUtils.e("onViewCreated");
+        LgUtils.e("onCreateView");
         mIsPrepared = true;
         mIsInit = false;
         return null;

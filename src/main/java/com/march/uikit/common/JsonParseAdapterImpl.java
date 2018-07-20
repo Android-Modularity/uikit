@@ -2,7 +2,7 @@ package com.march.uikit.common;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.march.common.adapter.JsonParseAdapter;
+import com.march.common.adapter.JsonParser;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author chendong
  */
-public class JsonParseAdapterImpl implements JsonParseAdapter {
+public class JsonParseAdapterImpl implements JsonParser {
 
     private Gson sGson = new Gson();
 

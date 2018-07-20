@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.march.common.utils.LogUtils;
+import com.march.common.utils.LgUtils;
 import com.march.uikit.R;
 
 /**
@@ -134,7 +134,7 @@ public class SlidingSelectLayout extends FrameLayout {
             GridLayoutManager glm = (GridLayoutManager) lm;
             itemSpanCount = glm.getSpanCount();
         } else {
-            LogUtils.e(TAG, "暂时不支持其他布局类型，请使用GridLayoutManager");
+            LgUtils.e(TAG, "暂时不支持其他布局类型，请使用GridLayoutManager");
             itemSpanCount = 4;
         }
         int size = (int) (getResources().getDisplayMetrics().widthPixels / (itemSpanCount * 1.0f));
@@ -217,7 +217,7 @@ public class SlidingSelectLayout extends FrameLayout {
             return;
         View findView = searchInViewGroup(this);
         if (findView == null) {
-            LogUtils.e(TAG, "can not find RecyclerView");
+            LgUtils.e(TAG, "can not find RecyclerView");
         } else {
             mTargetRv = (RecyclerView) findView;
         }

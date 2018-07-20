@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.march.common.utils.CheckUtils;
-import com.march.common.utils.LogUtils;
+import com.march.common.utils.LgUtils;
 import com.march.uikit.app.view.IElegantView;
 import com.march.uikit.app.config.IViewConfig;
 import com.march.uikit.app.config.ViewConfig;
@@ -98,7 +98,7 @@ public class BasicViewDelegate extends AbsViewDelegate implements IElegantView {
             try {
                 mActivity.startActivity(intent);
             } catch (Exception e) {
-                LogUtils.e(e);
+                LgUtils.e(e);
             }
         }
     }
