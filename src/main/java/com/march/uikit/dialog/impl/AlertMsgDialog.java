@@ -1,6 +1,7 @@
 package com.march.uikit.dialog.impl;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ public class AlertMsgDialog extends BaseDialog {
     private ViewGroup mContentContainerView;
     private View mLineView;
 
+
     public AlertMsgDialog(Context context) {
         super(context);
     }
@@ -53,6 +55,18 @@ public class AlertMsgDialog extends BaseDialog {
         mRightBtnTv.setOnClickListener(dismissListener);
     }
 
+    private DialogInterface.OnClickListener checkEmpty(DialogInterface.OnClickListener listener) {
+        if (listener == null) {
+            return new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            };
+        } else {
+            return listener;
+        }
+    }
     @Override
     protected void initViewOnCreate() {
         if(mLeftBtnTv.isShown() || mLeftBtnTv.isShown()){
@@ -76,17 +90,27 @@ public class AlertMsgDialog extends BaseDialog {
         return this;
     }
 
-    public AlertMsgDialog setLeftBtn(String text, View.OnClickListener listener) {
+    public AlertMsgDialog setLeftBtn(String text, DialogInterface.OnClickListener listener) {
         ViewUtils.setTextIfNotEmpty(mLeftBtnTv, text);
-        mLeftBtnTv.setOnClickListener(listener);
+        final OnClickListener onClickListener = checkEmpty(listener);
+        mLeftBtnTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onClick(AlertMsgDialog.this, 0);
+            }
+        });
         return this;
     }
 
-    public AlertMsgDialog setRightBtn(String text, View.OnClickListener listener) {
+    public AlertMsgDialog setRightBtn(String text, final DialogInterface.OnClickListener listener) {
         ViewUtils.setTextIfNotEmpty(mRightBtnTv, text);
-        if (listener != null) {
-            mRightBtnTv.setOnClickListener(listener);
-        }
+        final OnClickListener onClickListener = checkEmpty(listener);
+        mRightBtnTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onClick(AlertMsgDialog.this, 1);
+            }
+        });
         return this;
     }
 
