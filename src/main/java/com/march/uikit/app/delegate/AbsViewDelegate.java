@@ -35,22 +35,6 @@ class AbsViewDelegate implements IViewDelegate {
         }
     }
 
-    //////////////////////////////  -- ViewLifeCycle --  //////////////////////////////
-
-    @Override
-    public void initCreateView() {
-
-    }
-
-    @Override
-    public void initAfterViewCreated() {
-
-    }
-
-    @Override
-    public void initBeforeViewCreated() {
-
-    }
 
 
     //////////////////////////////  -- StateLifeCycle --  //////////////////////////////

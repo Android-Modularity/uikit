@@ -9,11 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.march.uikit.UIKit;
-import com.march.uikit.app.config.IViewConfig;
+import com.march.uikit.app.config.IViewInit;
 import com.march.uikit.app.config.ViewConfig;
-import com.march.uikit.app.delegate.BasicViewDelegate;
+import com.march.uikit.app.delegate.ViewDelegateImpl;
 import com.march.uikit.app.view.IView;
-import com.march.uikit.lifecycle.ViewLifeCycle;
 import com.march.uikit.manager.UIManager;
 
 
@@ -23,15 +22,14 @@ import com.march.uikit.manager.UIManager;
  *
  * @author chendong
  */
-public abstract class BaseActivity extends AppCompatActivity implements IView, ViewLifeCycle, IViewConfig {
+public abstract class BaseActivity extends AppCompatActivity implements IView, IViewInit {
 
-    protected BasicViewDelegate mViewDelegate;
+    protected ViewDelegateImpl mViewDelegate;
 
     @Override
-    public BasicViewDelegate newViewProxy() {
+    public ViewDelegateImpl newViewDelegate() {
         return null;
     }
-
 
     @Override
     public void startActivityForResult(Intent intent, int requestCode) {
@@ -51,11 +49,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            mViewDelegate = BasicViewDelegate.create(this);
-            initBeforeViewCreated();
+            mViewDelegate = ViewDelegateImpl.create(this);
             mViewDelegate.onCreate();
-            initCreateView();
-            initAfterViewCreated();
+            onDispatchInit(savedInstanceState);
             mViewDelegate.onViewReady();
             mViewDelegate.onRestoreInstanceState(savedInstanceState);
             UIManager.getInst().addActivity(this);
@@ -64,11 +60,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
         }
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
-    }
 
     @Override
     public void onResume() {
@@ -107,19 +98,10 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
 
     //////////////////////////////  -- ViewLifeCycle --  //////////////////////////////
 
-    @Override
-    public void initCreateView() {
-        mViewDelegate.initCreateView();
-    }
 
     @Override
-    public void initAfterViewCreated() {
-        mViewDelegate.initAfterViewCreated();
-    }
+    public void onDispatchInit(Bundle savedInstanceState) {
 
-    @Override
-    public void initBeforeViewCreated() {
-        mViewDelegate.initBeforeViewCreated();
     }
 
     //////////////////////////////  -- IView --  //////////////////////////////
@@ -161,7 +143,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IView, V
         return new ViewConfig();
     }
 
-    public BasicViewDelegate getViewDelegate() {
+    public ViewDelegateImpl getViewDelegate() {
         return mViewDelegate;
     }
 }

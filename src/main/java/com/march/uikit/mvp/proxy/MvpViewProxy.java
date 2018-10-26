@@ -3,7 +3,7 @@ package com.march.uikit.mvp.proxy;
 import android.os.Bundle;
 
 import com.march.uikit.UIKit;
-import com.march.uikit.app.delegate.BasicViewDelegate;
+import com.march.uikit.app.delegate.ViewDelegateImpl;
 import com.march.uikit.mvp.P.MvpPresenter;
 import com.march.uikit.mvp.V.MvpView;
 import com.march.uikit.mvp.factory.IPresenterFactory;
@@ -14,7 +14,7 @@ import com.march.uikit.mvp.factory.IPresenterFactory;
  *
  * @author chendong
  */
-public class MvpViewProxy<V extends MvpView, P extends MvpPresenter<V>> extends BasicViewDelegate {
+public class MvpViewProxy<V extends MvpView, P extends MvpPresenter<V>> extends ViewDelegateImpl {
 
     private IPresenterFactory<V, P> mFactory;
     private P mPresenter;
@@ -45,6 +45,12 @@ public class MvpViewProxy<V extends MvpView, P extends MvpPresenter<V>> extends 
         return mPresenter;
     }
 
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        getPresenter().onCreate();
+    }
 
     @Override
     public void onViewReady() {

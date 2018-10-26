@@ -1,18 +1,18 @@
 package com.march.uikit.app;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.march.uikit.app.config.IViewConfig;
+import com.march.uikit.app.config.IViewInit;
 import com.march.uikit.app.config.ViewConfig;
-import com.march.uikit.app.delegate.BasicViewDelegate;
 import com.march.uikit.app.delegate.LazyLoadViewDelegate;
+import com.march.uikit.app.delegate.ViewDelegateImpl;
 import com.march.uikit.app.view.IView;
-import com.march.uikit.lifecycle.ViewLifeCycle;
 
 
 /**
@@ -21,13 +21,13 @@ import com.march.uikit.lifecycle.ViewLifeCycle;
  *
  * @author chendong
  */
-public class BaseFragment extends Fragment implements IView, ViewLifeCycle, IViewConfig {
+public class BaseFragment extends Fragment implements IView, IViewInit {
 
-    protected BasicViewDelegate mViewDelegate;
-    private LazyLoadViewDelegate mLazyLoadViewDelegate;
+    protected ViewDelegateImpl     mViewDelegate;
+    private   LazyLoadViewDelegate mLazyLoadViewDelegate;
 
     @Override
-    public BasicViewDelegate newViewProxy() {
+    public ViewDelegateImpl newViewDelegate() {
         return null;
     }
 
@@ -46,9 +46,10 @@ public class BaseFragment extends Fragment implements IView, ViewLifeCycle, IVie
         if (mLazyLoadViewDelegate != null) {
             mLazyLoadViewDelegate.setHost(this);
         }
-        mViewDelegate = BasicViewDelegate.create(this);
+        mViewDelegate = ViewDelegateImpl.create(this);
         mViewDelegate.onCreate();
         mViewDelegate.onRestoreInstanceState(savedInstanceState);
+        onDispatchInit(savedInstanceState);
     }
 
 
@@ -71,7 +72,7 @@ public class BaseFragment extends Fragment implements IView, ViewLifeCycle, IVie
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mViewDelegate.onSaveInstanceState(outState);
     }
@@ -81,34 +82,32 @@ public class BaseFragment extends Fragment implements IView, ViewLifeCycle, IVie
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (mLazyLoadViewDelegate != null)
+        if (mLazyLoadViewDelegate != null) {
             mLazyLoadViewDelegate.setUserVisibleHint(isVisibleToUser);
+        }
     }
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (mLazyLoadViewDelegate != null) {
             mLazyLoadViewDelegate.onCreateView(inflater, container, savedInstanceState);
         }
-        initBeforeViewCreated();
         View view = mViewDelegate.onCreateView(inflater, container, savedInstanceState);
-        initCreateView();
         return view;
     }
 
-
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         try {
-            initAfterViewCreated();
-            mViewDelegate.onViewReady();
             if (mLazyLoadViewDelegate != null) {
                 mLazyLoadViewDelegate.onViewCreated(view, savedInstanceState);
             }
             mViewDelegate.onViewCreated(view, savedInstanceState);
+            onDispatchInit(savedInstanceState);
+            mViewDelegate.onViewReady();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -127,22 +126,11 @@ public class BaseFragment extends Fragment implements IView, ViewLifeCycle, IVie
         return mViewDelegate.getData();
     }
 
-    //////////////////////////////  -- ViewLifeCycle --  //////////////////////////////
-
     @Override
-    public void initCreateView() {
-        mViewDelegate.initCreateView();
+    public void onDispatchInit(Bundle savedInstanceState) {
+
     }
 
-    @Override
-    public void initAfterViewCreated() {
-        mViewDelegate.initAfterViewCreated();
-    }
-
-    @Override
-    public void initBeforeViewCreated() {
-        mViewDelegate.initBeforeViewCreated();
-    }
 
     //////////////////////////////  -- ViewConfigInterface --  //////////////////////////////
 
@@ -162,7 +150,7 @@ public class BaseFragment extends Fragment implements IView, ViewLifeCycle, IVie
     }
 
 
-    public BasicViewDelegate getViewDelegate() {
+    public ViewDelegateImpl getViewDelegate() {
         return mViewDelegate;
     }
 }

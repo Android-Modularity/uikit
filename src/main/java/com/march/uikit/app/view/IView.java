@@ -20,4 +20,6 @@ public interface IView {
     void startActivity(Class clz);
 
     Bundle getData();
+
+    void onDispatchInit(Bundle savedInstanceState);
 }

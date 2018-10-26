@@ -2,7 +2,6 @@ package com.march.uikit.app.delegate;
 
 import com.march.uikit.lifecycle.FragmentLifeCycle;
 import com.march.uikit.lifecycle.StateLifeCycle;
-import com.march.uikit.lifecycle.ViewLifeCycle;
 
 /**
  * CreateAt : 2017/12/7
@@ -10,7 +9,7 @@ import com.march.uikit.lifecycle.ViewLifeCycle;
  *
  * @author chendong
  */
-public interface IViewDelegate extends StateLifeCycle, ViewLifeCycle, FragmentLifeCycle {
+public interface IViewDelegate extends StateLifeCycle, FragmentLifeCycle {
 
     int TYPE_ACTIVITY = 1;
     int TYPE_FRAGMENT = 2;

@@ -14,9 +14,9 @@ import android.view.WindowManager;
 
 import com.march.common.utils.CheckUtils;
 import com.march.common.utils.LgUtils;
-import com.march.uikit.app.view.IElegantView;
-import com.march.uikit.app.config.IViewConfig;
+import com.march.uikit.app.config.IViewInit;
 import com.march.uikit.app.config.ViewConfig;
+import com.march.uikit.app.view.IElegantView;
 import com.march.uikit.widget.TitleView;
 
 /**
@@ -25,7 +25,7 @@ import com.march.uikit.widget.TitleView;
  *
  * @author chendong
  */
-public class BasicViewDelegate extends AbsViewDelegate implements IElegantView {
+public class ViewDelegateImpl extends AbsViewDelegate implements IElegantView {
 
     private ViewConfig mViewConfig;
     private TitleView mTitleView;
@@ -37,12 +37,12 @@ public class BasicViewDelegate extends AbsViewDelegate implements IElegantView {
      * @param pageConfInterface 配置接口
      * @return BaseViewProxy
      */
-    public static BasicViewDelegate create(IViewConfig pageConfInterface) {
-        BasicViewDelegate viewProxy = pageConfInterface.newViewProxy();
-        if (viewProxy == null) {
-            viewProxy = new BasicViewDelegate();
+    public static ViewDelegateImpl create(IViewInit pageConfInterface) {
+        ViewDelegateImpl viewDelegate = pageConfInterface.newViewDelegate();
+        if (viewDelegate == null) {
+            viewDelegate = new ViewDelegateImpl();
         }
-        viewProxy.setHost(pageConfInterface);
+        viewDelegate.setHost(pageConfInterface);
         ViewConfig viewConfig = pageConfInterface.getViewConfig();
         if (viewConfig == null) {
             viewConfig = new ViewConfig();
@@ -50,8 +50,8 @@ public class BasicViewDelegate extends AbsViewDelegate implements IElegantView {
         viewConfig.init(pageConfInterface.getLayoutId(), pageConfInterface.getLayoutView());
         // 注解配置更优先
         viewConfig.parseViewConfigAnnotation(pageConfInterface);
-        viewProxy.mViewConfig = viewConfig;
-        return viewProxy;
+        viewDelegate.mViewConfig = viewConfig;
+        return viewDelegate;
     }
 
 
@@ -120,6 +120,11 @@ public class BasicViewDelegate extends AbsViewDelegate implements IElegantView {
             bundle = new Bundle();
         }
         return bundle;
+    }
+
+    @Override
+    public void onDispatchInit(Bundle savedInstanceState) {
+
     }
 
     @Override

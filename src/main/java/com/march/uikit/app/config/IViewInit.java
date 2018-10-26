@@ -10,7 +10,7 @@ import com.march.uikit.app.delegate.ViewDelegateImpl;
  *
  * @author chendong
  */
-public interface IViewConfig {
+public interface IViewInit {
 
     int getLayoutId();
 
@@ -18,6 +18,6 @@ public interface IViewConfig {
 
     ViewConfig getViewConfig();
 
-    ViewDelegateImpl newViewProxy();
+    ViewDelegateImpl newViewDelegate();
 
 }
